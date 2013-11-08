@@ -2,6 +2,8 @@ package org.zzl.minegaming.GBAUtils;
 
 import java.awt.Point;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -333,10 +335,13 @@ public class LZ77Test
 	{
 		byte[] data = null;
 		byte[] paldats = null;
+		String path = LZ77Test.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+		
 		try
 		{
-			data = Files.readAllBytes(Paths.get("/home/maxamillion/workspace/GBAUtils/src/resources/ditto.img.bin"));
-			paldats = Files.readAllBytes(Paths.get("/home/maxamillion/workspace/GBAUtils/src/resources/ditto.pal.bin"));
+			String decodedPath = URLDecoder.decode(path, "UTF-8");
+			data = Files.readAllBytes(Paths.get(decodedPath + "/resources/ditto.img.bin"));
+			paldats = Files.readAllBytes(Paths.get(decodedPath + "/resources/ditto.pal.bin"));
 		}
 		catch (IOException e)
 		{
