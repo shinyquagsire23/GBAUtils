@@ -1,13 +1,17 @@
 package org.zzl.minegaming.GBAUtils;
 
+import java.awt.FileDialog;
+import java.awt.Frame;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -24,6 +28,45 @@ public class GBARom
 	HashMap<String, String> rom_header_names = new HashMap<String, String>();
 	HashMap<String, String> hex_tbl = new HashMap<String, String>();
 
+	@SuppressWarnings("deprecation")
+	/**
+	 * Loads a ROM using a file dialog. Sets the loaded ROM as default.
+	 * @return The ROMManager ROM Id.
+	 */
+	public static int loadRom()
+	{
+		FileDialog fd = new FileDialog(new Frame(), "Load a ROM...", FileDialog.LOAD);
+		fd.setFilenameFilter(new FilenameFilter()
+		{
+		    public boolean accept(File dir, String name)
+		    {
+		      return (name.toLowerCase().endsWith(".gba") || name.toLowerCase().endsWith(".bin") || name.toLowerCase().endsWith(".rbc") || name.toLowerCase().endsWith(".rbh"));
+		    }
+		 });
+		//fd.setDirectory(GlobalVars.LastDir);
+		fd.show();
+		String location = fd.getDirectory() + fd.getFile();
+		int romID = ROMManager.getID();
+		ROMManager.AddROM(romID, new GBARom(location));
+		ROMManager.ChangeROM(romID);
+		
+		if(ROMManager.getActiveROM().hex_tbl.isEmpty())
+		{
+			try
+			{
+				//String path = LZ77Test.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+				//String decodedPath = URLDecoder.decode(path, "UTF-8");
+				ROMManager.getActiveROM().loadHexTBL("/resources/poketable.tbl");
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		
+		return romID;
+	}
+	
 	/**
 	 *  Wraps that ROM up like a nice warm burrito
 	 * @param rom_path Path to the ROM file
@@ -195,11 +238,42 @@ public class GBARom
 	 * @param tbl_path File path to the character table
 	 * @throws IOException
 	 */
-	public void loadHexTBL(String tbl_path) throws IOException
+	public void loadHexTBLFromFile(String tbl_path) throws IOException
 	{
 		File file = new File(tbl_path);
 
 		BufferedReader br = new BufferedReader(new FileReader(file));
+		String line;
+		while ((line = br.readLine()) != null)
+		{
+			String[] seperated = line.split("=");
+			String key;
+			String value;
+
+			if (seperated.length > 1)
+			{
+				key = seperated[0];
+				value = seperated[1];
+			}
+			else
+			{
+				key = seperated[0];
+				value = " ";
+			}
+
+			hex_tbl.put(key, value);
+		}
+		br.close();
+	}
+	
+	/**
+	 *  Load a HEX table file for character mapping i.e. Pokétext
+	 * @param tbl_path File path to the character table
+	 * @throws IOException
+	 */
+	public void loadHexTBL(String tbl_path) throws IOException
+	{
+		BufferedReader br = new BufferedReader(new InputStreamReader(GBARom.class.getResourceAsStream(tbl_path)));
 		String line;
 		while ((line = br.readLine()) != null)
 		{
@@ -310,8 +384,18 @@ public class GBARom
 	
 	public String readPokeText(int offset, int length)
 	{
-		//TODO: Implement PokeText reader
-		return "";
+		if(length > -1)
+			return new String(BitConverter.GrabBytes(getData(), offset, length));
+		
+		byte b = 0x0;
+		int i = 0;
+		while(b != -1)
+		{
+			b = getData()[offset+i];
+			i++;
+		}
+		
+		return convertPoketextToAscii(BitConverter.GrabBytes(getData(), offset, i));
 	}
 	
 	public byte[] getData()
@@ -319,16 +403,63 @@ public class GBARom
 		return rom_bytes;
 	}
 	
+	/**
+	 * Gets a pointer at an offset
+	 * @param offset Offset to get the pointer from
+	 * @param fullPointer Whether we should fetch the full 32 bit pointer or the 24 bit byte[] friendly version.
+	 * @return Pointer as a Long
+	 */
+	public long getPointer(int offset, boolean fullPointer)
+	{
+		byte[] data = BitConverter.GrabBytes(getData(), offset, 4);
+		if(!fullPointer)
+			data[3] = 0;
+		return BitConverter.ToInt32(data);
+	}
+	
+	/**
+	 * Gets a 24 bit pointer in the ROM as an integer. 
+	 * @param offset Offset to get the pointer from
+	 * @return Pointer as a Long
+	 */
+	public long getPointer(int offset)
+	{
+		return getPointer(offset,false);
+	}
+	
+	/**
+	 * Gets a pointer in the ROM as an integer. 
+	 * Does not support 32 bit pointers due to Java's integer size not being long enough.
+	 * @param offset Offset to get the pointer from
+	 * @return Pointer as an Integer
+	 */
+	public int getPointerAsInt(int offset)
+	{
+		return (int)getPointer(offset,false);
+	}
+	
+	/**
+	 * Gets the game code from the ROM, ie BPRE for US Pkmn Fire Red
+	 * @return
+	 */
 	public String getGameCode()
 	{
 		return headerCode;
 	}
 	
+	/**
+	 * Gets the game text from the ROM, ie POKEMON FIRE for US Pkmn Fire Red
+	 * @return
+	 */
 	public String getGameText()
 	{
 		return headerName;
 	}
 	
+	/**
+	 * Gets the game creator ID as a String, ie '01' is GameFreak's Company ID
+	 * @return
+	 */
 	public String getGameCreatorID()
 	{
 		return headerMaker;

@@ -4,10 +4,12 @@ public class BitConverter
 {
 	protected BitConverter(){}
 	
-	public static long ToInt32(byte[] bytes)
+	public static long ToInt32(byte[] bytez)
 	{
 		//AB CD EF 08 -> 08EFCDAB
-		return (long)(bytes[3] + bytes[2] << 8 + bytes[1] << 16 + bytes[0] << 24);
+		int[] bytes = ToInts(bytez);
+		long l = (long)(bytes[0] + (bytes[1] << 8) + (bytes[2] << 16) + (bytes[3] << 24));
+		return l;
 	}
 	
 	public static byte[] GetBytes(long i)

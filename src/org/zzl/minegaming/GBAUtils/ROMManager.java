@@ -12,7 +12,7 @@ public class ROMManager
 		return currentROM;
 	}
 
-	public static void AddScreen(int stateId, GBARom rom)
+	public static void AddROM(int stateId, GBARom rom)
 	{
 		//System.Diagnostics.Debug.Assert(Exists(stateId));
 		screenStore.put(stateId,rom);
@@ -27,5 +27,15 @@ public class ROMManager
 	public static Boolean Exists(int stateId)
 	{
 		return (screenStore.containsKey(stateId));
+	}
+
+	public static int getID()
+	{
+		int i = 0;
+		while(screenStore.containsKey(i))
+		{
+			i++;
+		}
+		return i;
 	}
 }
