@@ -1,16 +1,24 @@
 package org.zzl.minegaming.GBAUtils;
 
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
+
 import javax.swing.JPanel;
 
 public class ImagePanel extends JPanel{
 
 	private static final long serialVersionUID = -877213633894324075L;
-	private BufferedImage image;
+	private Image image;
 
-    public ImagePanel(BufferedImage img) {
+    public ImagePanel(BufferedImage img) 
+    {
        image = img;
+    }
+    
+    public ImagePanel(Image img)
+    {
+    	image = img;
     }
 
     @Override

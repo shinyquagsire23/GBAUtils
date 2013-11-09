@@ -46,6 +46,8 @@ public class GBARom
 		//fd.setDirectory(GlobalVars.LastDir);
 		fd.show();
 		String location = fd.getDirectory() + fd.getFile();
+		if(location.isEmpty())
+			return -1;
 		int romID = ROMManager.getID();
 		ROMManager.AddROM(romID, new GBARom(location));
 		ROMManager.ChangeROM(romID);
@@ -61,6 +63,7 @@ public class GBARom
 			catch (IOException e)
 			{
 				e.printStackTrace();
+				return -1;
 			}
 		}
 		
@@ -118,10 +121,10 @@ public class GBARom
 	 * @param size Amount of bytes to grab
 	 * @return
 	 */
-	public byte[] readBytesFromROM(String offset, int size)
+	public byte[] readBytes(String offset, int size)
 	{
 		int offs = convertOffsetToInt(offset);
-		return readBytesFromROM(offs, size);
+		return readBytes(offs, size);
 	}
 	
 	/**
@@ -130,9 +133,40 @@ public class GBARom
 	 * @param size Amount of bytes to grab
 	 * @return
 	 */
-	public byte[] readBytesFromROM(int offset, int size)
+	public byte[] readBytes(int offset, int size)
 	{
 		return BitConverter.GrabBytes(rom_bytes, offset, size);
+	}
+	
+	/**
+	 * Reads a byte from an offset
+	 * @param offset Offset to read from
+	 * @return
+	 */
+	public byte readByte(int offset)
+	{
+		return readBytes(offset,1)[0];
+	}
+	
+	/**
+	 * Reads a byte from an offset
+	 * @param offset Offset to read from
+	 * @return
+	 */
+	public int readByteAsInt(int offset)
+	{
+		return BitConverter.ToInts(readBytes(offset,1))[0];
+	}
+	
+	/**
+	 * Reads a 16 bit word from an offset
+	 * @param offset Offset to read from
+	 * @return
+	 */
+	public int readWord(int offset)
+	{
+		int[] words = BitConverter.ToInts(readBytes(offset,2));
+		return (words[1] << 8) + (words[0]);
 	}
 
 	/**
@@ -140,14 +174,12 @@ public class GBARom
 	 * @param offset Offset to write the bytes at
 	 * @param bytes_to_write Bytes to write to the ROM
 	 */
-	public void writeBytesToROMArray(String offset, byte[] bytes_to_write)
+	public void writeBytes(int offset, byte[] bytes_to_write)
 	{
-		int offs = convertOffsetToInt(offset);
-
 		for (int count = 0; count < bytes_to_write.length; count++)
 		{
-			rom_bytes[offs] = bytes_to_write[count];
-			offs++;
+			rom_bytes[offset] = bytes_to_write[count];
+			offset++;
 		}
 	}
 
@@ -211,7 +243,7 @@ public class GBARom
 	@Deprecated
 	public byte[] getROMHeader(String header_offset, int header_size)
 	{
-		current_rom_header = readBytesFromROM(header_offset, header_size);
+		current_rom_header = readBytes(header_offset, header_size);
 		return current_rom_header;
 	}
 
@@ -436,6 +468,29 @@ public class GBARom
 	public int getPointerAsInt(int offset)
 	{
 		return (int)getPointer(offset,false);
+	}
+	
+	/**
+	 * Reverses and writes a pointer to the ROM
+	 * @param pointer Pointer to write
+	 * @param offset Offset to write it at
+	 */
+	public void writePointer(long pointer, int offset)
+	{
+		byte[] bytes = BitConverter.GetBytes(pointer);
+		writeBytes(offset,bytes);
+	}
+	
+	/**
+	 * Reverses and writes a pointer to the ROM. Assumes pointer is ROM memory and appends 08 to it.
+	 * @param pointer Pointer to write (appends 08 automatically)
+	 * @param offset Offset to write it at
+	 */
+	public void writePointer(int pointer, int offset)
+	{
+		byte[] bytes = BitConverter.GetBytes(pointer);
+		bytes[3] = 0x08;
+		writeBytes(offset,bytes);
 	}
 	
 	/**

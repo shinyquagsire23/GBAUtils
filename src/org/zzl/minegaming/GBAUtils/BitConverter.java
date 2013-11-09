@@ -12,6 +12,11 @@ public class BitConverter
 		return l;
 	}
 	
+	public static int shortenPointer(long pointer)
+	{
+		return (int)(pointer & 0xFFFFFF);
+	}
+	
 	public static byte[] GetBytes(long i)
 	{
 		return new byte[] { (byte)(i & 0xFF000000 >> 24), (byte)(i & 0x00FF0000 >> 16), (byte)(i & 0x0000FF00 >> 8), (byte)(i & 0x000000FF) };
@@ -42,5 +47,34 @@ public class BitConverter
 	public static int[] ToInts(byte[] array)
 	{
 		return GrabBytesAsInts(array,0,array.length);
+	}
+
+	public static String toHexString(int b)
+	{
+		return toHexString(b,false);
+	}
+	
+	public static String toHexString(int b, boolean spacing)
+	{
+		if(spacing)
+			return String.format("%02X", Math.abs(b)); //Use absolute value to prevent negative bytes
+		else
+			return String.format("%X", Math.abs(b));
+	}
+	
+	public static String toDwordString(int b, boolean spacing)
+	{
+		if(spacing)
+			return String.format("%06X", Math.abs(b)); //Use absolute value to prevent negative bytes
+		else
+			return String.format("%X", Math.abs(b));
+	}
+	
+	public static String byteToStringNoZero(int b)
+	{
+		if(b != 0)
+			return String.format("%X", Math.abs(b));
+		else
+			return "";
 	}
 }

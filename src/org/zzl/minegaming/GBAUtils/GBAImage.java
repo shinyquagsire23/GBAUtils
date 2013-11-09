@@ -1,5 +1,6 @@
 package org.zzl.minegaming.GBAUtils;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
@@ -18,15 +19,30 @@ public class GBAImage
 	
 	public BufferedImage getBufferedImage()
 	{
-		if(p.getSize() == 16)
-			return get16Image();
-		else
-			return get256Image();
+		return getBufferedImage(true);
 	}
 	
-	private BufferedImage get16Image()
+	public BufferedImage getBufferedImage(boolean transparency)
 	{
-		BufferedImage im = new BufferedImage(size.x, size.y, BufferedImage.TYPE_INT_RGB);
+		if(p.getSize() == 16)
+			return get16Image(p, transparency);
+		else
+			return get256Image(transparency);
+	}
+	
+	public BufferedImage getBufferedImageFromPal(Palette pl)
+	{
+		return get16Image(pl, true);
+	}
+	
+	public BufferedImage getBufferedImageFromPal(Palette pl, boolean trans)
+	{
+		return get16Image(pl, trans);
+	}
+	
+	private BufferedImage get16Image(Palette pl, boolean transparency)
+	{
+		BufferedImage im = new BufferedImage(size.x, size.y, BufferedImage.TYPE_INT_ARGB);
 		Graphics g = im.getGraphics();
 		int x = -1;
 		int y = 0;
@@ -59,7 +75,7 @@ public class GBAImage
 
 			try
 			{
-				g.setColor(p.getIndex(pal));
+				g.setColor((transparency && pal == 0 ? new Color(0,0,0,0) : p.getIndex(pal)));
 				g.drawRect(x + (blockx * 8), y + (blocky * 8), 1, 1);
 			}
 			catch(Exception e){}
@@ -67,9 +83,9 @@ public class GBAImage
 		return im;
 	}
 	
-	private BufferedImage get256Image()
+	private BufferedImage get256Image(boolean transparency)
 	{
-		BufferedImage im = new BufferedImage(size.x, size.y, BufferedImage.TYPE_INT_RGB);
+		BufferedImage im = new BufferedImage(size.x, size.y, BufferedImage.TYPE_INT_ARGB);
 		Graphics g = im.getGraphics();
 		int x = -1;
 		int y = 0;
@@ -97,7 +113,7 @@ public class GBAImage
 			int pal = data[i];
 			try
 			{
-				g.setColor(p.getIndex(pal));
+				g.setColor((transparency && pal == 0 ? new Color(0,0,0,0) : p.getIndex(pal)));
 				g.drawRect(x + (blockx * 8), y + (blocky * 8), 1, 1);
 			}
 			catch(Exception e){}
