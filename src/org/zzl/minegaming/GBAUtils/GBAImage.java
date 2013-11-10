@@ -2,8 +2,15 @@ package org.zzl.minegaming.GBAUtils;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.Paths;
 
 public class GBAImage
 {
@@ -42,8 +49,19 @@ public class GBAImage
 	
 	private BufferedImage get16Image(Palette pl, boolean transparency)
 	{
+		try
+		{
+			Files.write(Paths.get("/home/maxamillion/dump.bin"), BitConverter.toBytes(data));
+		}
+		catch (IOException e1)
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		BufferedImage im = new BufferedImage(size.x, size.y, BufferedImage.TYPE_INT_ARGB);
-		Graphics g = im.getGraphics();
+		//Graphics2D g = (Graphics2D) im.getGraphics();
+		//g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                //RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 		int x = -1;
 		int y = 0;
 		int blockx = 0;
@@ -75,8 +93,7 @@ public class GBAImage
 
 			try
 			{
-				g.setColor((transparency && pal == 0 ? new Color(0,0,0,0) : p.getIndex(pal)));
-				g.drawRect(x + (blockx * 8), y + (blocky * 8), 1, 1);
+				im.getRaster().setPixel(x + (blockx * 8), y + (blocky * 8), new int[]{p.getIndex(pal).getRed(),p.getIndex(pal).getGreen(),p.getIndex(pal).getBlue(),(transparency && pal == 0 ? 0 : 255)});
 			}
 			catch(Exception e){}
 		}
