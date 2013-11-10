@@ -77,4 +77,15 @@ public class BitConverter
 		else
 			return "";
 	}
+
+	
+	public static byte[] toBytes(int[] data)
+	{
+		byte[] result = new byte[data.length];
+		for(int i = 0; i < result.length; i++)
+		{
+			result[i] = (byte)(data[i]);
+		}
+		return result;
+	}
 }
