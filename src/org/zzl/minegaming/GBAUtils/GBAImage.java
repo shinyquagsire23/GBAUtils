@@ -49,19 +49,7 @@ public class GBAImage
 	
 	private BufferedImage get16Image(Palette pl, boolean transparency)
 	{
-		try
-		{
-			Files.write(Paths.get("/home/maxamillion/dump.bin"), BitConverter.toBytes(data));
-		}
-		catch (IOException e1)
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 		BufferedImage im = new BufferedImage(size.x, size.y, BufferedImage.TYPE_INT_ARGB);
-		//Graphics2D g = (Graphics2D) im.getGraphics();
-		//g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                //RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 		int x = -1;
 		int y = 0;
 		int blockx = 0;
