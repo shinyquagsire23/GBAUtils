@@ -93,7 +93,7 @@ public class GBAImage
 
 			try
 			{
-				im.getRaster().setPixel(x + (blockx * 8), y + (blocky * 8), new int[]{p.getIndex(pal).getRed(),p.getIndex(pal).getGreen(),p.getIndex(pal).getBlue(),(transparency && pal == 0 ? 0 : 255)});
+				im.getRaster().setPixel(x + (blockx * 8), y + (blocky * 8), new int[]{pl.getIndex(pal).getRed(),pl.getIndex(pal).getGreen(),pl.getIndex(pal).getBlue(),(transparency && pal == 0 ? 0 : 255)});
 			}
 			catch(Exception e){}
 		}
