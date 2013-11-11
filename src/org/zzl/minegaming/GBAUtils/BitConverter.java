@@ -44,6 +44,15 @@ public class BitConverter
 		return result;
 	}
 
+	public static byte[] PutBytes(byte[] array, byte[] toPut, int offset)
+	{
+		for(int i = 0; i < toPut.length; i++)
+		{
+			array[offset+i] = toPut[i];
+		}
+		return array;
+	}
+	
 	public static int[] ToInts(byte[] array)
 	{
 		return GrabBytesAsInts(array,0,array.length);
