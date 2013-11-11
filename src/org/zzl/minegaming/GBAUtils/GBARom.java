@@ -15,7 +15,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class GBARom
+public class GBARom implements Cloneable
 {
 	private String headerCode = "";
 	private String headerName = "";
@@ -518,5 +518,13 @@ public class GBARom
 	public String getGameCreatorID()
 	{
 		return headerMaker;
+	}
+
+	public Object clone(){  
+	    try{  
+	        return super.clone();  
+	    }catch(Exception e){ 
+	        return null; 
+	    }
 	}
 }
