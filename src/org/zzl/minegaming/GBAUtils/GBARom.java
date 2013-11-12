@@ -189,6 +189,14 @@ public class GBARom implements Cloneable
 		int[] words = BitConverter.ToInts(readBytes(offset,2));
 		return (words[1] << 8) + (words[0]);
 	}
+	
+	public void writeWord(int offset, int toWrite)
+	{
+		int[] bytes = new int[] {toWrite & 0xFF, (toWrite & 0xFF00) >> 8};
+		byte[] nBytes = BitConverter.toBytes(bytes);
+		writeBytes(offset,nBytes);
+	}
+	
 	/**
 	 * Reads a 16 bit word from an InternalOffset
 	 * @param offset Offset to read from
