@@ -197,6 +197,12 @@ public class GBARom implements Cloneable
 		writeBytes(offset,nBytes);
 	}
 	
+	public void writeWord(int toWrite)
+	{
+		writeWord(internalOffset,toWrite);
+		internalOffset += 2;
+	}
+	
 	/**
 	 * Reads a 16 bit word from an InternalOffset
 	 * @param offset Offset to read from
@@ -221,6 +227,18 @@ public class GBARom implements Cloneable
 			offset++;
 		}
 	}
+	
+	public void writeByte(byte b, int offset)
+	{
+		rom_bytes[offset] = b;
+	}
+	
+	public void writeByte(byte b)
+	{
+		writeByte(b,internalOffset);
+		internalOffset++;
+	}
+	
     public int internalOffset;
     /**
 	 *  Write an array of bytes to the ROM at a given offset
