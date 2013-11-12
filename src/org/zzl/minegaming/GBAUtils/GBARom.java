@@ -15,7 +15,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class GBARom
+public class GBARom implements Cloneable
 {
 	private String headerCode = "";
 	private String headerName = "";
@@ -126,7 +126,7 @@ public class GBARom
 		int offs = convertOffsetToInt(offset);
 		return readBytes(offs, size);
 	}
-	
+
 	/**
 	 *  Read bytes from the ROM from given offset into an array of a given size
 	 * @param offset Offset in ROM
@@ -137,7 +137,12 @@ public class GBARom
 	{
 		return BitConverter.GrabBytes(rom_bytes, offset, size);
 	}
-	
+	public byte[] readBytes( int size)
+	{
+		byte[] t=BitConverter.GrabBytes(rom_bytes, internalOffset, size);
+		internalOffset+=size;	
+		return t;
+	}
 	/**
 	 * Reads a byte from an offset
 	 * @param offset Offset to read from
@@ -147,7 +152,12 @@ public class GBARom
 	{
 		return readBytes(offset,1)[0];
 	}
-	
+	public byte readByte()
+	{
+		byte t=readBytes(internalOffset,1)[0];
+		internalOffset+=1;
+		return t;
+	}
 	/**
 	 * Reads a byte from an offset
 	 * @param offset Offset to read from
@@ -156,6 +166,17 @@ public class GBARom
 	public int readByteAsInt(int offset)
 	{
 		return BitConverter.ToInts(readBytes(offset,1))[0];
+	}
+	/**
+	 * Reads a byte from an internal offset
+	 * @param offset Offset to read from
+	 * @return
+	 */
+	public int readByteAsInt()
+	{
+		int tmp=BitConverter.ToInts(readBytes(internalOffset,1))[0];
+		internalOffset++;
+		return tmp;
 	}
 	
 	/**
@@ -168,7 +189,17 @@ public class GBARom
 		int[] words = BitConverter.ToInts(readBytes(offset,2));
 		return (words[1] << 8) + (words[0]);
 	}
-
+	/**
+	 * Reads a 16 bit word from an InternalOffset
+	 * @param offset Offset to read from
+	 * @return
+	 */
+	public int readWord()
+	{
+		int[] words = BitConverter.ToInts(readBytes(internalOffset,2));
+		internalOffset+=2;
+		return (words[1] << 8) + (words[0]);
+	}
 	/**
 	 *  Write an array of bytes to the ROM at a given offset
 	 * @param offset Offset to write the bytes at
@@ -182,7 +213,20 @@ public class GBARom
 			offset++;
 		}
 	}
-
+    public int internalOffset;
+    /**
+	 *  Write an array of bytes to the ROM at a given offset
+	 * @param offset Offset to write the bytes at
+	 * @param bytes_to_write Bytes to write to the ROM
+	 */
+    public void writeBytes(byte[] bytes_to_write)
+	{
+		for (int count = 0; count < bytes_to_write.length; count++)
+		{
+			rom_bytes[internalOffset] = bytes_to_write[count];
+			internalOffset++;
+		}
+	}
 	/**
 	 *  Write any changes made back to the ROM file on disk
 	 * @return
@@ -518,5 +562,92 @@ public class GBARom
 	public String getGameCreatorID()
 	{
 		return headerMaker;
+	}
+	/**
+	 * Reads ASCII text from the ROM
+	 * @param offset The offset to read from
+	 * @param length The amount of text to read
+	 * @return Returns the text as a String object
+	 */
+	
+	
+	
+	/**
+	 * Gets a pointer at an offset
+	 * @param offset Offset to get the pointer from
+	 * @param fullPointer Whether we should fetch the full 32 bit pointer or the 24 bit byte[] friendly version.
+	 * @return Pointer as a Long
+	 */
+	public long getPointer(boolean fullPointer)
+	{
+		byte[] data = BitConverter.GrabBytes(getData(), internalOffset, 4);
+		if(!fullPointer)
+			data[3] = 0;
+		internalOffset+=4;
+		return BitConverter.ToInt32(data);
+	}
+	
+	/**
+	 * Gets a 24 bit pointer in the ROM as an integer. 
+	 * @param offset Offset to get the pointer from
+	 * @return Pointer as a Long
+	 */
+	public long getPointer()
+	{
+		return getPointer(false);
+	}
+	
+	/**
+	 * Gets a pointer in the ROM as an integer. 
+	 * Does not support 32 bit pointers due to Java's integer size not being long enough.
+	 * @param offset Offset to get the pointer from
+	 * @return Pointer as an Integer
+	 */
+	public int getPointerAsInt()
+	{
+		return (int)getPointer(internalOffset,false);
+	}
+	
+	/**
+	 * Reverses and writes a pointer to the ROM
+	 * @param pointer Pointer to write
+	 * @param offset Offset to write it at
+	 */
+	public void writePointer(long pointer)
+	{
+		byte[] bytes = BitConverter.GetBytes(pointer);
+
+		writeBytes(internalOffset,bytes);
+		internalOffset+=4;
+	}
+	
+	/**
+	 * Reverses and writes a pointer to the ROM. Assumes pointer is ROM memory and appends 08 to it.
+	 * @param pointer Pointer to write (appends 08 automatically)
+	 * @param offset Offset to write it at
+	 */
+	public void writePointer(int pointer)
+	{
+		byte[] bytes = BitConverter.GetBytes(pointer);
+		bytes[3] = 0x08;
+		writeBytes(internalOffset,bytes);
+		internalOffset+=4;
+	}
+	
+	/**
+	 * Gets the game code from the ROM, ie BPRE for US Pkmn Fire Red
+	 * @return
+	 */
+	public void Seek(int offset){
+		internalOffset=offset;
+	}
+
+
+	public Object clone(){  
+	    try{  
+	        return super.clone();  
+	    }catch(Exception e){ 
+	        return null; 
+	    }
 	}
 }
