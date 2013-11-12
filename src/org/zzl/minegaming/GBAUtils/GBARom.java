@@ -154,7 +154,7 @@ public class GBARom implements Cloneable
 	}
 	public byte readByte()
 	{
-		byte t=readBytes(internalOffset,1)[0];
+		byte t = rom_bytes[internalOffset];
 		internalOffset+=1;
 		return t;
 	}
@@ -235,7 +235,7 @@ public class GBARom implements Cloneable
 	
 	public void writeByte(byte b)
 	{
-		writeByte(b,internalOffset);
+		rom_bytes[internalOffset] = b;
 		internalOffset++;
 	}
 	
@@ -633,7 +633,7 @@ public class GBARom implements Cloneable
 	 */
 	public void writePointer(long pointer)
 	{
-		byte[] bytes = BitConverter.GetBytes(pointer);
+		byte[] bytes = BitConverter.ReverseBytes(BitConverter.GetBytes(pointer));
 
 		writeBytes(internalOffset,bytes);
 		internalOffset+=4;
@@ -646,8 +646,9 @@ public class GBARom implements Cloneable
 	 */
 	public void writePointer(int pointer)
 	{
-		byte[] bytes = BitConverter.GetBytes(pointer);
-		bytes[3] = 0x08;
+		byte[] bytes = BitConverter.ReverseBytes(BitConverter.GetBytes(pointer));
+		bytes[3] += 0x8;
+
 		writeBytes(internalOffset,bytes);
 		internalOffset+=4;
 	}

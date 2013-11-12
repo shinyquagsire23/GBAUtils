@@ -14,12 +14,27 @@ public class BitConverter
 	
 	public static int shortenPointer(long pointer)
 	{
-		return (int)(pointer & 0xFFFFFF);
+		return (int)(pointer & 0x1FFFFFF);
 	}
 	
 	public static byte[] GetBytes(long i)
 	{
-		return new byte[] { (byte)(i & 0xFF000000 >> 24), (byte)(i & 0x00FF0000 >> 16), (byte)(i & 0x0000FF00 >> 8), (byte)(i & 0x000000FF) };
+		return new byte[] { (byte)((i & 0xFF000000) >> 24), (byte)((i & 0x00FF0000) >> 16), (byte)((i & 0x0000FF00) >> 8), (byte)((i & 0x000000FF)) };
+	}
+	
+	public static int[] GetInts(long i)
+	{
+		return new int[] { (int)((i & 0xFF000000) >> 24), (int)((i & 0x00FF0000) >> 16), (int)((i & 0x0000FF00) >> 8), (int)((i & 0x000000FF)) };
+	}
+	
+	public static byte[] ReverseBytes(byte[] bytes)
+	{
+		byte[] toReturn = new byte[bytes.length];
+		for(int i = 0; i < bytes.length; i++)
+		{
+			toReturn[i] = bytes[bytes.length-1-i];
+		}
+		return toReturn;
 	}
 
 	public static byte[] GrabBytes(byte[] array, int offset, int length)
