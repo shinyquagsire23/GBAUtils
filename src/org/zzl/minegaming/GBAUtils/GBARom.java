@@ -178,7 +178,19 @@ public class GBARom implements Cloneable
 		internalOffset++;
 		return tmp;
 	}
-	
+	public long readLong()
+	{
+		byte[] t=readBytes(4);
+		internalOffset+=4;
+		return BitConverter.ToInt32(t);
+		
+	}
+	public long readLong(int offset)
+	{
+		byte[] t=readBytes(offset, 4);
+		return BitConverter.ToInt32(t);
+		
+	}
 	/**
 	 * Reads a 16 bit word from an offset
 	 * @param offset Offset to read from
@@ -450,8 +462,8 @@ public class GBARom implements Cloneable
 			int amount, int max_struct_size)
 	{
 		ArrayList<byte[]> data = new ArrayList<byte[]>();
-		int offs = offset;
-
+		int offs = offset & 0x1FFFFFF;
+      
 		for (int count = 0; count < amount; count++)
 		{
 			byte[] temp_byte = new byte[max_struct_size];
@@ -514,8 +526,7 @@ public class GBARom implements Cloneable
 	public long getPointer(int offset, boolean fullPointer)
 	{
 		byte[] data = BitConverter.GrabBytes(getData(), offset, 4);
-		if(!fullPointer)
-			data[3] = 0;
+		data[3]=0;
 		return BitConverter.ToInt32(data);
 	}
 	
