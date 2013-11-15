@@ -22,7 +22,7 @@ public class GBARom implements Cloneable
 	private String headerMaker = "";
 
 	static byte[] rom_bytes;
-	String input_filepath;
+	public String input_filepath;
 	static byte[] current_rom_header;
 
 	HashMap<String, String> rom_header_names = new HashMap<String, String>();
