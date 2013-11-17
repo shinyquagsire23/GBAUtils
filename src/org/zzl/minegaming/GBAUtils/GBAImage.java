@@ -7,6 +7,8 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
@@ -22,6 +24,8 @@ public class GBAImage
 		p = palette;
 		data = imageBytes;
 		this.size = size;
+		//make sure verything is dandy..
+	
 	}
 	
 	public BufferedImage getBufferedImage()
@@ -118,7 +122,7 @@ public class GBAImage
 			int pal = data[i];
 			try
 			{
-				g.setColor((transparency && pal == 0 ? new Color(0,0,0,0) : p.getIndex(pal)));
+				g.setColor( p.getIndex(pal));
 				g.drawRect(x + (blockx * 8), y + (blocky * 8), 1, 1);
 			}
 			catch(Exception e){}
