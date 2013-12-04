@@ -4,8 +4,6 @@ import java.awt.Point;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 public class LZ77Test
 {
@@ -340,8 +338,9 @@ public class LZ77Test
 		try
 		{
 			String decodedPath = URLDecoder.decode(path, "UTF-8");
-			data = Files.readAllBytes(Paths.get(decodedPath + "/resources/ditto.img.bin"));
-			paldats = Files.readAllBytes(Paths.get(decodedPath + "/resources/ditto.pal.bin"));
+			//Sorry Java 7, but we're going to Java 6 now.
+			//data = Files.readAllBytes(Paths.get(decodedPath + "/resources/ditto.img.bin"));
+			//paldats = Files.readAllBytes(Paths.get(decodedPath + "/resources/ditto.pal.bin"));
 		}
 		catch (IOException e)
 		{
