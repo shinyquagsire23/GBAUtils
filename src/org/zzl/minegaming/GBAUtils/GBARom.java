@@ -551,6 +551,16 @@ public class GBARom implements Cloneable
 		return (int)getPointer(offset,false);
 	}
 	
+	public long getSignedLong(boolean fullPointer)
+	{
+		byte[] data = BitConverter.GrabBytes(getData(), internalOffset, 4);
+		if(!fullPointer)
+			data[3] = 0;
+		internalOffset+=4;
+		long ptr = BitConverter.ToInt32(data);
+		return (data[3] > 0x7F ? ~ptr : ptr);
+	}
+	
 	/**
 	 * Reverses and writes a pointer to the ROM
 	 * @param pointer Pointer to write
@@ -643,6 +653,14 @@ public class GBARom implements Cloneable
 	 * @param offset Offset to write it at
 	 */
 	public void writePointer(long pointer)
+	{
+		byte[] bytes = BitConverter.ReverseBytes(BitConverter.GetBytes(pointer));
+
+		writeBytes(internalOffset,bytes);
+		internalOffset+=4;
+	}
+	
+	public void writeSignedPointer(long pointer)
 	{
 		byte[] bytes = BitConverter.ReverseBytes(BitConverter.GetBytes(pointer));
 
