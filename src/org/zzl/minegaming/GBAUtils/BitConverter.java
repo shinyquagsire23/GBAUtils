@@ -7,9 +7,7 @@ public class BitConverter
 	public static long ToInt32(byte[] bytez)
 	{
 		//AB CD EF 08 -> 08EFCDAB
-		int[] bytes = ToInts(bytez);
-		long l = (long)(bytes[0] + (bytes[1] << 8) + (bytes[2] << 16) + (bytes[3] << 24));
-		return l;
+		return (long)((bytez[0] & 0xFF) + ((bytez[1] & 0xFF) << 8) + ((bytez[2] & 0xFF) << 16) + ((bytez[3] & 0xFF) << 24));
 	}
 	
 	public static int shortenPointer(long pointer)
