@@ -690,13 +690,13 @@ public class GBARom implements Cloneable
 		internalOffset=offset;
 	}
 
-	public static byte freeSpaceByte = (byte)0xFF;
-	public static int findFreespace(int length)
+	public byte freeSpaceByte = (byte)0xFF;
+	public int findFreespace(int length)
 	{
 		return findFreespace(length, 0);
 	}
 	
-	public static int findFreespace(int length, int startingLocation)
+	public int findFreespace(int length, int startingLocation)
 	{
 		byte free = freeSpaceByte;
 		 byte[] searching = new byte[length];
