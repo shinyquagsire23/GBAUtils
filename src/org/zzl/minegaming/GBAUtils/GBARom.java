@@ -723,6 +723,12 @@ public class GBARom implements Cloneable
 		 return freespace;
 	}
 	
+	public void floodBytes(int offset, byte b, int length)
+	{
+		for(int i = offset; i < offset+length; i++)
+			rom_bytes[i] = b;
+	}
+	
 	public Object clone(){  
 	    try{  
 	        return super.clone();  
