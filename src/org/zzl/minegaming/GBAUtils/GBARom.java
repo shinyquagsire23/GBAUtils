@@ -690,6 +690,39 @@ public class GBARom implements Cloneable
 		internalOffset=offset;
 	}
 
+	public static byte freeSpaceByte = (byte)0xFF;
+	public static int findFreespace(int length)
+	{
+		return findFreespace(length, 0);
+	}
+	
+	public static int findFreespace(int length, int startingLocation)
+	{
+		byte free = freeSpaceByte;
+		 byte[] searching = new byte[length];
+		 for(int i = 0; i < length; i++)
+			 searching[i] = free;
+		 int numMatches = 0;
+		 int freespace = -1;
+		 for(int i = startingLocation; i < rom_bytes.length; i++)
+		 {
+			 byte b = rom_bytes[i];
+			 byte c = searching[numMatches];
+			 if(b == c)
+			 {
+				 numMatches++;
+				 if(numMatches == searching.length - 1)
+				 {
+					 freespace = i - searching.length + 2;
+					 break;
+				 }
+			 }
+			 else
+				 numMatches = 0;
+		 }
+		 return freespace;
+	}
+	
 	public Object clone(){  
 	    try{  
 	        return super.clone();  
