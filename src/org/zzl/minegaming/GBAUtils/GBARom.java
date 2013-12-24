@@ -696,11 +696,11 @@ public class GBARom implements Cloneable
 		return findFreespace(length, 0);
 	}
 	
-	public int findFreespace(int length, int startingLocation)
+	public int findFreespace(long freespaceStart, int startingLocation)
 	{
 		byte free = freeSpaceByte;
-		 byte[] searching = new byte[length];
-		 for(int i = 0; i < length; i++)
+		 byte[] searching = new byte[(int) freespaceStart];
+		 for(int i = 0; i < freespaceStart; i++)
 			 searching[i] = free;
 		 int numMatches = 0;
 		 int freespace = -1;
