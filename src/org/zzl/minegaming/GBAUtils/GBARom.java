@@ -499,7 +499,7 @@ public class GBARom implements Cloneable
 	public String readPokeText(int offset, int length)
 	{
 		if(length > -1)
-			return new String(BitConverter.GrabBytes(getData(), offset, length));
+			return convertPoketextToAscii(BitConverter.GrabBytes(getData(), offset, length));
 		
 		byte b = 0x0;
 		int i = 0;
@@ -510,6 +510,21 @@ public class GBARom implements Cloneable
 		}
 		
 		return convertPoketextToAscii(BitConverter.GrabBytes(getData(), offset, i));
+	}
+	
+	public String readPokeText()
+	{
+		byte b = 0x0;
+		int i = 0;
+		while(b != -1)
+		{
+			b = getData()[internalOffset+i];
+			i++;
+		}
+		
+		String s = convertPoketextToAscii(BitConverter.GrabBytes(getData(), internalOffset, i));
+		internalOffset += i;
+		return s;
 	}
 	
 	public byte[] getData()
@@ -690,6 +705,45 @@ public class GBARom implements Cloneable
 		internalOffset=offset;
 	}
 
+	public byte freeSpaceByte = (byte)0xFF;
+	public int findFreespace(int length)
+	{
+		return findFreespace(length, 0);
+	}
+	
+	public int findFreespace(long freespaceStart, int startingLocation)
+	{
+		byte free = freeSpaceByte;
+		 byte[] searching = new byte[(int) freespaceStart];
+		 for(int i = 0; i < freespaceStart; i++)
+			 searching[i] = free;
+		 int numMatches = 0;
+		 int freespace = -1;
+		 for(int i = startingLocation; i < rom_bytes.length; i++)
+		 {
+			 byte b = rom_bytes[i];
+			 byte c = searching[numMatches];
+			 if(b == c)
+			 {
+				 numMatches++;
+				 if(numMatches == searching.length - 1)
+				 {
+					 freespace = i - searching.length + 2;
+					 break;
+				 }
+			 }
+			 else
+				 numMatches = 0;
+		 }
+		 return freespace;
+	}
+	
+	public void floodBytes(int offset, byte b, int length)
+	{
+		for(int i = offset; i < offset+length; i++)
+			rom_bytes[i] = b;
+	}
+	
 	public Object clone(){  
 	    try{  
 	        return super.clone();  
