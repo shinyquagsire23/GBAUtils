@@ -499,7 +499,7 @@ public class GBARom implements Cloneable
 	public String readPokeText(int offset, int length)
 	{
 		if(length > -1)
-			return new String(BitConverter.GrabBytes(getData(), offset, length));
+			return convertPoketextToAscii(BitConverter.GrabBytes(getData(), offset, length));
 		
 		byte b = 0x0;
 		int i = 0;
@@ -510,6 +510,21 @@ public class GBARom implements Cloneable
 		}
 		
 		return convertPoketextToAscii(BitConverter.GrabBytes(getData(), offset, i));
+	}
+	
+	public String readPokeText()
+	{
+		byte b = 0x0;
+		int i = 0;
+		while(b != -1)
+		{
+			b = getData()[internalOffset+i];
+			i++;
+		}
+		
+		String s = convertPoketextToAscii(BitConverter.GrabBytes(getData(), internalOffset, i));
+		internalOffset += i;
+		return s;
 	}
 	
 	public byte[] getData()
