@@ -552,7 +552,7 @@ public class GBARom implements Cloneable
 	 */
 	public long getPointer(int offset)
 	{
-		return getPointer(offset,false);
+		return getPointer(offset,false)& 0x1FFFFFF;
 	}
 	
 	/**
