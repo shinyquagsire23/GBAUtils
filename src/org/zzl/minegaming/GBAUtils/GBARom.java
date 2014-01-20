@@ -744,6 +744,43 @@ public class GBARom implements Cloneable
 			rom_bytes[i] = b;
 	}
 	
+	public void repoint(int pOriginal, int pNew)
+	{
+		repoint(pOriginal, pNew, -1);
+	}
+	
+	public void repoint(int pOriginal, int pNew, int numbertolookfor)
+	{
+		pOriginal |= 0x08000000;
+		 byte[] searching = BitConverter.ReverseBytes(BitConverter.GetBytes(pOriginal));
+		 int numMatches = 0;
+		 int totalMatches = 0;
+		 int offset = -1;
+		 for(int i = 0; i < rom_bytes.length; i++)
+		 {
+			 byte b = rom_bytes[i];
+			 byte c = searching[numMatches];
+			 if(b == c)
+			 {
+				 numMatches++;
+				 if(numMatches == searching.length - 1)
+				 {
+					 offset = i - searching.length + 2;
+					 this.Seek(offset);
+					 this.writePointer(pNew);
+					 System.out.println(BitConverter.toHexString(offset));
+					 totalMatches++;
+					 if(totalMatches == numbertolookfor)
+						 break;
+					 numMatches = 0;
+				 }
+			 }
+			 else
+				 numMatches = 0;
+		 }
+		 System.out.println("Found " + totalMatches + " occurences of the pointer specified.");
+	}
+	
 	public Object clone(){  
 	    try{  
 	        return super.clone();  

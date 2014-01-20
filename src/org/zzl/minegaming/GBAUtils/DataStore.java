@@ -144,7 +144,7 @@ public class DataStore
 		SpriteSmallSet = ReadNumberEntry(ROMHeader, "SpriteSmallSet");
 		SpriteLargeSet = ReadNumberEntry(ROMHeader, "SpriteLargeSet");
 		NumSprites = ReadNumberEntry(ROMHeader, "NumSprites");
-		WildPokemon = ReadNumberEntry(ROMHeader, "WildPokemon");
+		WildPokemon = ROMManager.currentROM.getPointer((int)ReadNumberEntry(ROMHeader, "WildPokemon"));
 		FontGFX = ReadNumberEntry(ROMHeader, "FontGFX");
 		FontWidths = ReadNumberEntry(ROMHeader, "FontWidths");
 		AttackNameList = ReadNumberEntry(ROMHeader, "AttackNameList");
