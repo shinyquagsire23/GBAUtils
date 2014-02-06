@@ -40,7 +40,7 @@ public class GBARom implements Cloneable
 		{
 		    public boolean accept(File dir, String name)
 		    {
-		      return (name.toLowerCase().endsWith(".gba") || name.toLowerCase().endsWith(".bin") || name.toLowerCase().endsWith(".rbc") || name.toLowerCase().endsWith(".rbh"));
+		      return (name.toLowerCase().endsWith(".gba") || name.toLowerCase().endsWith(".bin") || name.toLowerCase().endsWith(".rbc") || name.toLowerCase().endsWith(".rbh") || name.toLowerCase().endsWith(".but") || name.toLowerCase().endsWith(".bmp"));
 		    }
 		 });
 		//fd.setDirectory(GlobalVars.LastDir);
@@ -636,7 +636,7 @@ public class GBARom implements Cloneable
 	{
 		byte[] data = BitConverter.GrabBytes(getData(), internalOffset, 4);
 		if(!fullPointer)
-			data[3] = 0;
+			data[3] -= 0x8;
 		internalOffset+=4;
 		return BitConverter.ToInt32(data);
 	}
@@ -701,7 +701,11 @@ public class GBARom implements Cloneable
 	 * Gets the game code from the ROM, ie BPRE for US Pkmn Fire Red
 	 * @return
 	 */
-	public void Seek(int offset){
+	public void Seek(int offset)
+	{
+		if(offset > 0x08000000)
+			offset &= 0x1FFFFFF;
+		
 		internalOffset=offset;
 	}
 
