@@ -27,6 +27,10 @@ public class GBARom implements Cloneable
 
 	HashMap<String, String> rom_header_names = new HashMap<String, String>();
 	HashMap<String, String> hex_tbl = new HashMap<String, String>();
+	
+	public boolean isPrimalDNAdded = false;
+	public boolean isRTCAdded = false;
+	public boolean isDNPkmnPatchAdded = false;
 
 	@SuppressWarnings("deprecation")
 	/**
@@ -93,6 +97,22 @@ public class GBARom implements Cloneable
 		headerMaker = readText(0xB0, 2);
 
 		updateROMHeaderNames();
+		updateFlags();
+	}
+	
+	public void updateFlags()
+	{
+		if(headerCode.equalsIgnoreCase("BPRE"))
+		{
+			if(readByte(0x082903) == 0x8) //Is there a function pointer here?
+				isDNPkmnPatchAdded = true;
+			if(readByte(0x427) == 0x8) //Is interdpth's RTC in there?
+				isRTCAdded = true;
+		}
+		else if(headerCode.equalsIgnoreCase("BPEE"))
+		{
+			
+		}
 	}
 
 	/**
@@ -712,10 +732,20 @@ public class GBARom implements Cloneable
 	public byte freeSpaceByte = (byte)0xFF;
 	public int findFreespace(int length)
 	{
-		return findFreespace(length, 0);
+		return findFreespace(length, 0, false);
+	}
+	
+	public int findFreespace(int length, boolean asmSafe)
+	{
+		return findFreespace(length, 0, asmSafe);
 	}
 	
 	public int findFreespace(long freespaceStart, int startingLocation)
+	{
+		return findFreespace(freespaceStart, startingLocation, false);
+	}
+	
+	public int findFreespace(long freespaceStart, int startingLocation, boolean asmSafe)
 	{
 		byte free = freeSpaceByte;
 		 byte[] searching = new byte[(int) freespaceStart];
@@ -744,6 +774,9 @@ public class GBARom implements Cloneable
 	
 	public void floodBytes(int offset, byte b, int length)
 	{
+		if(offset > 0x1FFFFFF)
+			return;
+		
 		for(int i = offset; i < offset+length; i++)
 			rom_bytes[i] = b;
 	}
