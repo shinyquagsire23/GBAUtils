@@ -1,5 +1,7 @@
 package org.zzl.minegaming.GBAUtils;
 
+import javax.swing.*;
+import javax.swing.filechooser.*;
 import java.awt.FileDialog;
 import java.awt.Frame;
 import java.io.BufferedReader;
@@ -39,17 +41,28 @@ public class GBARom implements Cloneable
 	 */
 	public static int loadRom()
 	{
-		FileDialog fd = new FileDialog(new Frame(), "Load a ROM...", FileDialog.LOAD);
-		fd.setFilenameFilter(new FilenameFilter()
-		{
-		    public boolean accept(File dir, String name)
-		    {
+	    /*
+        FileDialog fd = new FileDialog(new Frame(), "Load a ROM...", FileDialog.LOAD);
+		fd.setFilenameFilter(new FilenameFilter() {
+		    public boolean accept(File dir, String name) {
 		      return (name.toLowerCase().endsWith(".gba") || name.toLowerCase().endsWith(".bin") || name.toLowerCase().endsWith(".rbc") || name.toLowerCase().endsWith(".rbh") || name.toLowerCase().endsWith(".but") || name.toLowerCase().endsWith(".bmp"));
 		    }
-		 });
-		//fd.setDirectory(GlobalVars.LastDir);
+		});
+		fd.setDirectory(GlobalVars.LastDir);
 		fd.show();
-		String location = fd.getDirectory() + fd.getFile();
+        String location = fd.getDirectory() + fd.getFile();
+        */
+        JFileChooser chooser = new JFileChooser();
+        chooser.addChoosableFileFilter(new FileNameExtensionFilter("GameBoy Advance Images (*.gba)", "gba"));
+        chooser.addChoosableFileFilter(new FileNameExtensionFilter("Raw Images (*.raw)", "raw"));
+        chooser.addChoosableFileFilter(new FileNameExtensionFilter("Backup Images (*.bak)", "bak"));
+        chooser.addChoosableFileFilter(new FileNameExtensionFilter("Rubicon Scripts (*.rbc)", "rbc"));
+        chooser.addChoosableFileFilter(new FileNameExtensionFilter("Rubicon Headers (*.rbh)", "rbh"));
+        chooser.addChoosableFileFilter(new FileNameExtensionFilter("BUT Files (*.but)", "but"));
+        chooser.addChoosableFileFilter(new FileNameExtensionFilter("Bitmaps (*.bmp)", "bmp"));
+        chooser.showOpenDialog(null);
+        String location = chooser.getSelectedFile().toString();
+        System.out.println(location);
 		if(location.isEmpty())
 			return -1;
 		int romID = ROMManager.getID();
