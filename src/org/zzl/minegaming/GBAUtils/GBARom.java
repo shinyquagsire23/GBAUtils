@@ -60,6 +60,7 @@ public class GBARom implements Cloneable
         chooser.addChoosableFileFilter(new FileNameExtensionFilter("Rubicon Headers (*.rbh)", "rbh"));
         chooser.addChoosableFileFilter(new FileNameExtensionFilter("BUT Files (*.but)", "but"));
         chooser.addChoosableFileFilter(new FileNameExtensionFilter("Bitmaps (*.bmp)", "bmp"));
+        chooser.setFileFilter(chooser.getChoosableFileFilters()[1]);
         chooser.showOpenDialog(null);
         String location = chooser.getSelectedFile().toString();
         System.out.println(location);
