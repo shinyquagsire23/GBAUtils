@@ -111,7 +111,9 @@ public class GBARom implements Cloneable
 		}
 		else if(headerCode.equalsIgnoreCase("BPEE"))
 		{
-			
+			isRTCAdded = true;
+			if(readByte(0x0B4C7F) == 0x8)
+				isDNPkmnPatchAdded = true;
 		}
 	}
 
@@ -745,11 +747,11 @@ public class GBARom implements Cloneable
 		return findFreespace(freespaceStart, startingLocation, false);
 	}
 	
-	public int findFreespace(long freespaceStart, int startingLocation, boolean asmSafe)
+	public int findFreespace(long freespaceSize, int startingLocation, boolean asmSafe)
 	{
 		byte free = freeSpaceByte;
-		 byte[] searching = new byte[(int) freespaceStart];
-		 for(int i = 0; i < freespaceStart; i++)
+		 byte[] searching = new byte[(int) freespaceSize];
+		 for(int i = 0; i < freespaceSize; i++)
 			 searching[i] = free;
 		 int numMatches = 0;
 		 int freespace = -1;
