@@ -8,10 +8,8 @@ public class Palette
 	private byte[] reds;
 	private byte[] greens;
 	private byte[] blues;
-	private int[] origData;
  	public Palette(GBAImageType type, int[] data)
 	{
- 		origData = data;
 		if(type == GBAImageType.c16)
 		{
 			colors = new Color[16];
@@ -151,12 +149,6 @@ public class Palette
 			color |= (((greens[i] >> 3) & 0x1F) << 5);
 			color |= (((blues[i] >> 3) & 0x3F) << 10);
 			color &= 0x7FFF;
-			
-			int origColor = origData[(i*2)] + (origData[(i*2)+1] << 8);
-			if(origColor != color)
-			{
-				color = color;
-			}
 			
 			data[(i*2)+1] = (byte)((color & 0xFF00) >> 8);
 			data[(i*2)] = (byte)(color & 0xFF);
