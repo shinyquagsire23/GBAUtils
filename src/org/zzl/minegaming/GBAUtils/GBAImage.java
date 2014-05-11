@@ -3,9 +3,13 @@ package org.zzl.minegaming.GBAUtils;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.IndexColorModel;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -16,6 +20,7 @@ public class GBAImage
 	private Palette p;
 	private int[] data;
 	private Point size;
+	
 	public GBAImage(int[] imageBytes, Palette palette, Point size)
 	{
 		p = palette;
@@ -23,6 +28,62 @@ public class GBAImage
 		this.size = size;
 		//make sure verything is dandy..
 	
+	}
+	
+	public static GBAImage fromImage(Image img, Palette p)
+	{
+		BufferedImage im = (BufferedImage)img;
+		int x = -1;
+		int y = 0;
+		int blockx = 0;
+		int blocky = 0;
+		int[] data = new int[(im.getWidth() * im.getHeight()) / 2];
+		for(int i = 0; i < im.getWidth() * im.getHeight(); i++)
+		{
+			x++;
+			if(x >= 8)
+			{
+				x = 0;
+				y++;
+			}
+			if(y >= 8)
+			{
+				y = 0;
+				blockx++;
+			}
+			if(blockx > (im.getWidth() / 8) - 1)
+			{
+				blockx = 0;
+				blocky++;
+			}
+			Color c = new Color(im.getRGB(x + (blockx * 8), y + (blocky * 8)), true);
+			int pal = 0;
+			System.out.println(c.toString());
+			for(int j = 0; j < 16; j++) 
+			{
+				Color col = p.getIndex(j);
+				if(col.equals(c))
+				{
+					pal = j;
+					if(pal > 0)
+					{
+						pal = pal;
+					}
+				}
+			}
+			
+			int toWrite = data[i/2];
+			if((i & 1) == 0)
+				toWrite |= (pal & 0xF);
+			else
+				toWrite |= ((pal << 4) & 0xF0);
+			
+			if(toWrite != 0)
+				toWrite = toWrite;
+			
+			data[i/2] = toWrite;
+		}
+		return new GBAImage(data, p, new Point(img.getWidth(null), img.getHeight(null)));
 	}
 	
 	public BufferedImage getBufferedImage()
@@ -127,7 +188,63 @@ public class GBAImage
 		return im;
 	}
 	
-	public int[] getRaw()
+	public BufferedImage getIndexedImage()
+	{
+		return getIndexedImage(p, true);
+	}
+	
+	public BufferedImage getIndexedImage(Palette pl, boolean transparency)
+	{
+		byte[] a = new byte[] {(byte)0xFF,-128,-128,-128,-128,-128,-128,-128,-128,-128,-128,-128,-128,-128,-128,-128};
+		//if(transparency)
+			//a[0] = 0;
+		
+		IndexColorModel icm = new IndexColorModel(8,16,pl.getReds(),pl.getGreens(),pl.getBlues(), 0);
+		BufferedImage indexedImage = new BufferedImage(size.x, size.y, BufferedImage.TYPE_BYTE_INDEXED, icm);
+		Graphics g = indexedImage.getGraphics();
+		int x = -1;
+		int y = 0;
+		int blockx = 0;
+		int blocky = 0;
+		for(int i = 0; i < data.length * 2; i++)
+		{
+			x++;
+			if(x >= 8)
+			{
+				x = 0;
+				y++;
+			}
+			if(y >= 8)
+			{
+				y = 0;
+				blockx++;
+			}
+			if(blockx > (indexedImage.getWidth() / 8) - 1)
+			{
+				blockx = 0;
+				blocky++;
+			}
+			
+			int pal = data[i/2];
+			if((i & 1) == 0)
+				pal &= 0xF;
+			else
+				pal = (pal & 0xF0) >> 4;
+				
+			try
+			{
+				int x2 = 9;
+				int y2 = 10;
+				indexedImage.getRaster().getDataBuffer().setElem((x + (blockx * 8))+((y + (blocky * 8)) * indexedImage.getWidth()), pal);
+				//g.setColor( pl.getIndex(pal));
+				//g.drawRect(x + (blockx * 8), y + (blocky * 8), 1, 1);
+			}
+			catch(Exception e){}
+		}
+		return indexedImage;
+	}
+	
+ 	public int[] getRaw()
 	{
 		return data;
 	}
