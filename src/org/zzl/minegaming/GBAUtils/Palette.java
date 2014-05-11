@@ -8,8 +8,10 @@ public class Palette
 	private byte[] reds;
 	private byte[] greens;
 	private byte[] blues;
+	private int[] origData;
  	public Palette(GBAImageType type, int[] data)
 	{
+ 		origData = data;
 		if(type == GBAImageType.c16)
 		{
 			colors = new Color[16];
@@ -101,8 +103,64 @@ public class Palette
 		return blues;
 	}
 
+	public void setReds(byte[] reds)
+	{
+		this.reds = reds;
+		refreshColors();
+	}
+	
+	public void setGreens(byte[] greens)
+	{
+		this.greens = greens;
+		refreshColors();
+	}
+	
+	public void setBlues(byte[] blues)
+	{
+		this.blues = blues;
+		refreshColors();
+	}
+	
+	public void setColors(byte[] reds, byte[] greens, byte[] blues)
+	{
+		this.reds = reds;
+		this.blues = blues;
+		this.greens = greens;
+		refreshColors();
+	}
+	
+	public void refreshColors()
+	{
+		for(int i = 0; i < 16; i++)
+			colors[i] = new Color(reds[i] & 0xFF, greens[i] & 0xFF, blues[i] & 0xFF);
+	}
+	
 	public int getSize()
 	{
 		return colors.length;
+	}
+
+	
+	public void save(GBARom rom)
+	{
+		byte[] data = new byte[0x20];
+		for(int i = 0; i < 16; i++)
+		{
+			int color = 0;
+			color |= ((reds[i] >> 3) & 0x1F);
+			color |= (((greens[i] >> 3) & 0x1F) << 5);
+			color |= (((blues[i] >> 3) & 0x3F) << 10);
+			color &= 0x7FFF;
+			
+			int origColor = origData[(i*2)] + (origData[(i*2)+1] << 8);
+			if(origColor != color)
+			{
+				color = color;
+			}
+			
+			data[(i*2)+1] = (byte)((color & 0xFF00) >> 8);
+			data[(i*2)] = (byte)(color & 0xFF);
+		}
+		rom.writeBytes(data);
 	}
 }
