@@ -2,18 +2,10 @@ package org.zzl.minegaming.GBAUtils;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
 import java.awt.image.IndexColorModel;
-import java.awt.image.WritableRaster;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 public class GBAImage
 {
@@ -58,17 +50,12 @@ public class GBAImage
 			}
 			Color c = new Color(im.getRGB(x + (blockx * 8), y + (blocky * 8)), true);
 			int pal = 0;
-			System.out.println(c.toString());
 			for(int j = 0; j < 16; j++) 
 			{
 				Color col = p.getIndex(j);
 				if(col.equals(c))
 				{
 					pal = j;
-					if(pal > 0)
-					{
-						pal = pal;
-					}
 				}
 			}
 			
@@ -77,9 +64,6 @@ public class GBAImage
 				toWrite |= (pal & 0xF);
 			else
 				toWrite |= ((pal << 4) & 0xF0);
-			
-			if(toWrite != 0)
-				toWrite = toWrite;
 			
 			data[i/2] = toWrite;
 		}
@@ -194,14 +178,9 @@ public class GBAImage
 	}
 	
 	public BufferedImage getIndexedImage(Palette pl, boolean transparency)
-	{
-		byte[] a = new byte[] {(byte)0xFF,-128,-128,-128,-128,-128,-128,-128,-128,-128,-128,-128,-128,-128,-128,-128};
-		//if(transparency)
-			//a[0] = 0;
-		
+	{		
 		IndexColorModel icm = new IndexColorModel(8,16,pl.getReds(),pl.getGreens(),pl.getBlues(), 0);
 		BufferedImage indexedImage = new BufferedImage(size.x, size.y, BufferedImage.TYPE_BYTE_INDEXED, icm);
-		Graphics g = indexedImage.getGraphics();
 		int x = -1;
 		int y = 0;
 		int blockx = 0;
@@ -233,11 +212,7 @@ public class GBAImage
 				
 			try
 			{
-				int x2 = 9;
-				int y2 = 10;
 				indexedImage.getRaster().getDataBuffer().setElem((x + (blockx * 8))+((y + (blocky * 8)) * indexedImage.getWidth()), pal);
-				//g.setColor( pl.getIndex(pal));
-				//g.drawRect(x + (blockx * 8), y + (blocky * 8), 1, 1);
 			}
 			catch(Exception e){}
 		}
