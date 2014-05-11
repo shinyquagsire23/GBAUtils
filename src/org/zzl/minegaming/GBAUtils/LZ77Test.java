@@ -339,6 +339,8 @@ public class LZ77Test
 		{
 			String decodedPath = URLDecoder.decode(path, "UTF-8");
 			//Sorry Java 7, but we're going to Java 6 now.
+			data = BitConverter.toBytes(uncompressed);
+			paldats = BitConverter.toBytes(palette);
 			//data = Files.readAllBytes(Paths.get(decodedPath + "/resources/ditto.img.bin"));
 			//paldats = Files.readAllBytes(Paths.get(decodedPath + "/resources/ditto.pal.bin"));
 		}
@@ -347,9 +349,15 @@ public class LZ77Test
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		GBAImage g = new GBAImage(BitConverter.ToInts(data), new Palette(GBAImageType.c16,BitConverter.ToInts(paldats)), new Point(64,64));
+		GBAImage g = new GBAImage(BitConverter.ToInts(data), new Palette(GBAImageType.c16,BitConverter.ToInts(paldats)), new Point(64,64));	
+		GBAImage backwards = GBAImage.fromImage(g.getBufferedImage(), new Palette(GBAImageType.c16,BitConverter.ToInts(paldats)));
+		
 		PictureFrame pf = new PictureFrame(g.getBufferedImage());
 		pf.setSize(128, 128);
 		pf.setVisible(true);
+		
+		PictureFrame pf2 = new PictureFrame(backwards.getBufferedImage());
+		pf2.setSize(128, 128);
+		pf2.setVisible(true);
 	}
 }
