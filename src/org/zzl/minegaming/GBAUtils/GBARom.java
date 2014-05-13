@@ -47,6 +47,7 @@ public class GBARom implements Cloneable
 		      return (name.toLowerCase().endsWith(".gba") || name.toLowerCase().endsWith(".bin") || name.toLowerCase().endsWith(".rbc") || name.toLowerCase().endsWith(".rbh") || name.toLowerCase().endsWith(".but") || name.toLowerCase().endsWith(".bmp"));
 		    }
 		});
+		fd.setDirectory(System.getProperty("user.home"));
 		fd.show();
         String location = fd.getDirectory() + fd.getFile();
 

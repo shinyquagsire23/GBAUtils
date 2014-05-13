@@ -2,6 +2,7 @@ package org.zzl.minegaming.GBAUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+
 import dsdecmp.*;
 
 /**
@@ -11,6 +12,11 @@ import dsdecmp.*;
  */
 public class Lz77
 {
+	public static int getUncompressedSize(GBARom ROM, int offset)
+	{
+		return NewLz77.getLz77DataLength(ROM, offset);
+	}
+	
 	public static int[] decompressLZ77(GBARom ROM, int offset)
 	{
 		InputStream stream = new ByteArrayInputStream(ROM.getData());
@@ -24,8 +30,18 @@ public class Lz77
 		catch(Exception e)
 		{
 			e.printStackTrace();
-			return new int[] {0};
+			return null;
 		}
+		/*try
+		{
+			return BitConverter.ToInts(NewLz77.DecompressBytes(ROM.readBytes(offset, NewLz77.getLz77DataLength(ROM, offset))));
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return new int[]{0};
+		}*/
 	}
 	
 	public static int[] decompressLZ77(byte[] ROM, int offset)
@@ -41,37 +57,47 @@ public class Lz77
 		catch(Exception e)
 		{
 			e.printStackTrace();
-			return new int[] {0};
+			return null;
 		}
+		/*try
+		{
+			return BitConverter.ToInts(NewLz77.DecompressBytes(BitConverter.GrabBytes(ROM, offset, NewLz77.getLz77DataLength(ROM, offset))));
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return new int[]{0};
+		}*/
 	}
 	
 	public static int[] compressLZ77(byte[] data)
 	{
-		String decompressed = new String(data);
-		String compressed = dsdecmp.Lz77.compressStr(decompressed);
-		byte[] bytes = compressed.getBytes();
-		int[] ints = new int[bytes.length];
-		int i = 0;
-		for(byte b : bytes)
+		byte[] bytes = null;
+		try
 		{
-			ints[i] = (int)(b & 0xFF);
-			i++;
+			bytes = NewLz77.compressLZ10(data);
 		}
-		return ints;
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+		return BitConverter.ToInts(bytes);
 	}
 	
 	public static byte[] compressLZ77(int[] dats)
 	{
-		byte[] data = new byte[dats.length];
-		for(int i = 0; i < dats.length; i++)
+		byte[] bytes = null;
+		try
 		{
-			data[i] = (byte)(dats[i] - 128);
+			bytes = NewLz77.compressLZ10(BitConverter.toBytes(dats));
 		}
-		
-		String decompressed = new String(data);
-		String compressed = dsdecmp.Lz77.compressStr(decompressed);
-		byte[] bytes = compressed.getBytes();
-		
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return null;
+		}
 		return bytes;
 	}
 }

@@ -40,7 +40,14 @@ public class BitConverter
 		byte[] result = new byte[length];
 		for(int i = 0; i < length; i++)
 		{
-			result[i] = array[offset+i];
+			try
+			{
+				result[i] = array[offset+i];
+			}
+			catch(Exception e)
+			{
+				System.out.println("Method tried to access outsides of ROM!");
+			}
 		}
 		return result;
 	}
