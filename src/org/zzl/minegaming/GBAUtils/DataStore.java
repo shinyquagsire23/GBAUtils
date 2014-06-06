@@ -14,7 +14,7 @@ public class DataStore
 	private static Boolean passedTraits;
 
 	// private Parser p;//For when we have YAML reading as well
-	public float Str2Float(String nkey)
+	public static float Str2Float(String nkey)
 	{
 		int CommentIndex = -1;
 		float ReturnValue = 0;
@@ -42,7 +42,7 @@ public class DataStore
 		return ReturnValue;
 	}
 
-	public long Str2Num(String nkey)
+	public static long Str2Num(String nkey)
 	{
 		int CommentIndex = -1;
 		long ReturnValue = 0;
@@ -75,22 +75,22 @@ public class DataStore
 		return ReturnValue;
 	}
 
-	public float ReadFloatEntry(String Section, String key)
+	public static float ReadFloatEntry(String Section, String key)
 	{
 		return Str2Float(iP.get(Section, key));
 	}
 
-	public long ReadNumberEntry(String Section, String key)
+	public static long ReadNumberEntry(String Section, String key)
 	{
 		return Str2Num(iP.get(Section, key));
 	}
 
-	public void WriteString(String section, String key, String value)
+	public static void WriteString(String section, String key, String value)
 	{
 		iP.put(section, key, value);
 	}
 
-	String ReadString(String Section, String key)
+	public static String ReadString(String Section, String key)
 	{
 		String nkey = iP.get(Section, key);
 
@@ -119,6 +119,16 @@ public class DataStore
 		return ReturnValue;
 	}
 
+	public static boolean ReadBoolean(String Section, String key)
+	{
+		return (ReadString(Section, key).toLowerCase().equals("true") || ReadString(Section, key).toLowerCase().equals("yes") || ReadString(Section, key).toLowerCase().equals("1"));
+	}
+	
+	public static void WriteBoolean(String Section, String key, boolean bool)
+	{
+		WriteString(Section, key, bool ? "true" : "false");
+	}
+	
 	void ReadData(String ROMHeader)
 	{
 		// Read all the entries.
@@ -218,6 +228,7 @@ public class DataStore
 		mehSettingCallScriptEditor = ReadString("MEH", "mehSettingCallScriptEditor");
 		NumPokemon = (int) ReadNumberEntry("MEH", "NumPokemon");
 		mehPermissionTranslucency = ReadFloatEntry("MEH", "mehPermissionTranslucency");
+		mehMetTripleTiles = ReadBoolean("MEH", "mehMetTripleTiles");
 
 	}
 
@@ -341,7 +352,13 @@ public class DataStore
 	public static byte FreespaceByte;
 	public static int NumPokemon = 412;
 	public static int SpeciesNames;
+	public static boolean mehMetTripleTiles = false;
 
 	public static boolean bDataStoreInited;// Not stored in INI :p
+
+	public static void meetTripleTiles()
+	{
+		WriteBoolean("MEH", "mehMetTripleTiles", true);
+	}
 
 }
