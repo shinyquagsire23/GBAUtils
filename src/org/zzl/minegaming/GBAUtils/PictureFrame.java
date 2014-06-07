@@ -10,6 +10,8 @@ import java.awt.Image;
 
 public class PictureFrame extends JFrame
 {
+	public static boolean isOpen = false;
+	
 	/**
 	 * Serial Stuffs
 	 */
@@ -19,7 +21,7 @@ public class PictureFrame extends JFrame
 	{
 		ImagePanel panel = new ImagePanel(img);
 		getContentPane().add(panel, BorderLayout.CENTER);
-		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		this.setSize(img.getWidth(), 256);
 	}
 	
 
@@ -27,6 +29,6 @@ public class PictureFrame extends JFrame
 	{
 		ImagePanel panel = new ImagePanel(img);
 		getContentPane().add(panel, BorderLayout.CENTER);
-		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		this.setSize(img.getWidth(null), 256);
 	}
 }

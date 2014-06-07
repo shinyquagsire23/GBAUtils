@@ -113,6 +113,7 @@ public class DataStore
 			// There's a chance the key may not exist, let's come up with a way
 			// to handle this case
 			//
+			e.printStackTrace();
 			ReturnValue = "";
 
 		}
@@ -229,7 +230,15 @@ public class DataStore
 		NumPokemon = (int) ReadNumberEntry("MEH", "NumPokemon");
 		mehPermissionTranslucency = ReadFloatEntry("MEH", "mehPermissionTranslucency");
 		mehMetTripleTiles = ReadBoolean("MEH", "mehMetTripleTiles");
-
+		mehTripleEditByte = (int) ReadNumberEntry("MEH", "mehTripleEditByte");
+		
+		//if(mehTripleEditByte == 0)
+			//mehTripleEditByte = 0x60;
+	}
+	
+	public static String getBehaviorString(int num)
+	{
+		return ReadString("Behaviors", "b" + num + "");
 	}
 
 	public static void WriteNumberEntry(String Section, String key, int val)// Writes
@@ -348,6 +357,7 @@ public class DataStore
 	public static int mehUsePlugins;
 	public static int mehSettingShowSprites;
 	public static String mehSettingCallScriptEditor;
+	public static int mehTripleEditByte;
 	public static long FreespaceStart;
 	public static byte FreespaceByte;
 	public static int NumPokemon = 412;
