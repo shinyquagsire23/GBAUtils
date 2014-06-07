@@ -238,7 +238,7 @@ public class DataStore
 	
 	public static String getBehaviorString(int num)
 	{
-		return ReadString("Behaviors", "b" + num + "");
+		return ReadString("Behaviors" + EngineVersion, "b" + num + "");
 	}
 
 	public static void WriteNumberEntry(String Section, String key, int val)// Writes
