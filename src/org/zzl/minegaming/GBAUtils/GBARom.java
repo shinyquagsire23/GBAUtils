@@ -565,7 +565,8 @@ public class GBARom implements Cloneable
 	public long getPointer(int offset, boolean fullPointer)
 	{
 		byte[] data = BitConverter.GrabBytes(getData(), offset, 4);
-		data[3]=0;
+		if(!fullPointer)
+			data[3]=0;
 		return BitConverter.ToInt32(data);
 	}
 	
@@ -619,6 +620,7 @@ public class GBARom implements Cloneable
 	public void writePointer(int pointer, int offset)
 	{
 		byte[] bytes = BitConverter.GetBytes(pointer);
+		bytes = BitConverter.ReverseBytes(bytes);
 		bytes[3] = 0x08;
 		writeBytes(offset,bytes);
 	}
