@@ -138,8 +138,55 @@ public class Palette
 		return colors.length;
 	}
 
+	public Palette xorColor(Color c)
+	{
+		for (int i = 0; i < 16; i++)
+		{
+			Color end = blend(c, colors[i]);
+
+			byte red = (byte) end.getRed();
+			byte blue = (byte) end.getBlue();
+			byte green = (byte) end.getGreen();
+
+			reds[i] = red;
+			greens[i] = green;
+			blues[i] = blue;
+		}
+		
+		refreshColors();
+		return this;
+	}
 	
-	public void save(GBARom rom)
+	private Color blend(Color c0, Color c1) 
+	{
+	    double totalAlpha = c0.getAlpha() + c1.getAlpha();
+	    double weight0 = c0.getAlpha() / totalAlpha;
+	    double weight1 = c1.getAlpha() / totalAlpha;
+
+	    double r = weight0 * c0.getRed() + weight1 * c1.getRed();
+	    double g = weight0 * c0.getGreen() + weight1 * c1.getGreen();
+	    double b = weight0 * c0.getBlue() + weight1 * c1.getBlue();
+	    double a = Math.max(c0.getAlpha(), c1.getAlpha());
+
+	    return new Color((int) r, (int) g, (int) b, (int) a);
+	}
+	
+	public static Color[] gradient(Color c0, Color c1, int steps)
+	{
+		Color[] colors = new Color[steps];
+		for(int i = 0; i < steps; i++ )
+		{
+			float n = (float) i / (float) (steps - 1);
+			int r = (int) ((float) c0.getRed() * (1.0f - n) + (float) c1.getRed() * n);
+			int g = (int) ((float) c0.getGreen() * (1.0f - n) + (float) c1.getGreen() * n);
+			int b = (int) ((float) c0.getBlue() * (1.0f - n) + (float) c1.getBlue() * n);
+			int a = (int) ((float) c0.getAlpha() * (1.0f - n) + (float) c1.getAlpha() * n);
+			colors[i] = new Color(r,g,b,a);
+		}
+		return colors;
+	}
+	
+ 	public void save(GBARom rom)
 	{
 		byte[] data = new byte[0x20];
 		for(int i = 0; i < 16; i++)

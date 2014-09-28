@@ -1,9 +1,12 @@
 package org.zzl.minegaming.GBAUtils;
 
 import java.awt.Point;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 
 public class LZ77Test
 {
@@ -290,6 +293,14 @@ public class LZ77Test
 	public static void main(String[] args) throws Exception
 	{
 		CheckCompression();
+	}
+	
+	public static byte[] makeBytes(byte b, int reps)
+	{
+		byte[] arr = new byte[reps];
+		for(int i = 0; i < reps; i++)
+			arr[i] = b;
+		return arr;
 	}
 	
 	public static void CheckCompression()
