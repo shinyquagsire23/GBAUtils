@@ -41,7 +41,7 @@ public class GBARom implements Cloneable
 	{
 	    //We use FileDialog here so that we get the System native file chooser instead of something else.
 		//If there's any issues with it on Windows we can implement a file choosing API and use both JFileChooser and FileDialog.
-        FileDialog fd = new FileDialog(new Frame(), "Load a ROM...", FileDialog.LOAD);
+        FileDialog fd = new FileDialog(new Frame(), "Load ROM", FileDialog.LOAD);
 		fd.setFilenameFilter(new FilenameFilter() {
 		    public boolean accept(File dir, String name) {
 		      return (name.toLowerCase().endsWith(".gba") || name.toLowerCase().endsWith(".bin") || name.toLowerCase().endsWith(".rbc") || name.toLowerCase().endsWith(".rbh") || name.toLowerCase().endsWith(".but") || name.toLowerCase().endsWith(".bmp"));
@@ -54,8 +54,18 @@ public class GBARom implements Cloneable
         System.out.println(location);
 		if(location.isEmpty())
 			return -1;
+		if(fd.getFile() == null)
+			return -1;
 		int romID = ROMManager.getID();
-		ROMManager.AddROM(romID, new GBARom(location));
+		try
+		{
+			ROMManager.AddROM(romID, new GBARom(location));
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+			return -2;
+		}
 		ROMManager.ChangeROM(romID);
 		
 		if(ROMManager.getActiveROM().hex_tbl.isEmpty())
@@ -69,10 +79,10 @@ public class GBARom implements Cloneable
 			catch (IOException e)
 			{
 				e.printStackTrace();
-				return -1;
+				return -3;
 			}
 		}
-		
+		System.out.println(romID);
 		return romID;
 	}
 	
@@ -80,7 +90,7 @@ public class GBARom implements Cloneable
 	 *  Wraps that ROM up like a nice warm burrito
 	 * @param rom_path Path to the ROM file
 	 */
-	public GBARom(String rom_path)
+	public GBARom(String rom_path) throws IOException
 	{
 		input_filepath = rom_path;
 
@@ -92,6 +102,7 @@ public class GBARom implements Cloneable
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw e;
 		}
 		
 		headerCode = readText(0xAC,4);
@@ -161,7 +172,7 @@ public class GBARom implements Cloneable
 	{
 		return BitConverter.GrabBytes(rom_bytes, offset, size);
 	}
-	public byte[] readBytes( int size)
+	public byte[] readBytes(int size)
 	{
 		byte[] t=BitConverter.GrabBytes(rom_bytes, internalOffset, size);
 		internalOffset+=size;	
@@ -259,8 +270,13 @@ public class GBARom implements Cloneable
 	{
 		for (int count = 0; count < bytes_to_write.length; count++)
 		{
-			rom_bytes[offset] = bytes_to_write[count];
-			offset++;
+			try {
+				rom_bytes[offset] = bytes_to_write[count];
+				offset++;
+			}
+			catch (Exception e) {
+				System.out.println("Tried to write outside of bounds! (" + (offset) + ")");
+			}
 		}
 	}
 	
