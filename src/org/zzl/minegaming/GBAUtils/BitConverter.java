@@ -46,7 +46,7 @@ public class BitConverter
 			}
 			catch(Exception e)
 			{
-				System.out.println("Method tried to access outsides of ROM!");
+				System.out.println("Tried to read outside of bounds! (" + offset + ", " + i + ")");
 			}
 		}
 		return result;
