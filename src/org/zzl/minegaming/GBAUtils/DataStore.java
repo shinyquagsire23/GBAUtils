@@ -113,7 +113,7 @@ public class DataStore
 			// There's a chance the key may not exist, let's come up with a way
 			// to handle this case
 			//
-			e.printStackTrace();
+//			e.printStackTrace();
 			ReturnValue = "";
 
 		}
