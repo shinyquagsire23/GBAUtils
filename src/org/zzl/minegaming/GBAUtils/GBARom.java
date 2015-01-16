@@ -1,6 +1,5 @@
 package org.zzl.minegaming.GBAUtils;
 
-import java.awt.FileDialog;
 import java.awt.Frame;
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,6 +13,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import javax.swing.Action;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class GBARom implements Cloneable
 {
@@ -41,21 +45,40 @@ public class GBARom implements Cloneable
 	{
 	    //We use FileDialog here so that we get the System native file chooser instead of something else.
 		//If there's any issues with it on Windows we can implement a file choosing API and use both JFileChooser and FileDialog.
-        FileDialog fd = new FileDialog(new Frame(), "Load ROM", FileDialog.LOAD);
+        
+		//FileDialog implementation
+		/*FileDialog fd = new FileDialog(new Frame(), "Load ROM", FileDialog.LOAD);
 		fd.setFilenameFilter(new FilenameFilter() {
 		    public boolean accept(File dir, String name) {
 		      return (name.toLowerCase().endsWith(".gba") || name.toLowerCase().endsWith(".bin") || name.toLowerCase().endsWith(".rbc") || name.toLowerCase().endsWith(".rbh") || name.toLowerCase().endsWith(".but") || name.toLowerCase().endsWith(".bmp"));
 		    }
 		});
 		fd.setDirectory(System.getProperty("user.home"));
-		fd.show();
+		fd.setVisible(true);
         String location = fd.getDirectory() + fd.getFile();
 
         System.out.println(location);
 		if(location.isEmpty())
 			return -1;
 		if(fd.getFile() == null)
+			return -1;*/
+		
+		//JFileChooser implementation
+		FileFilter filter = new FileNameExtensionFilter("GBA ROM", "gba", "bin");
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setFileFilter(filter);
+		Action details = fileChooser.getActionMap().get("viewTypeDetails");
+		details.actionPerformed(null);
+		if (fileChooser.showOpenDialog(new Frame()) != JFileChooser.APPROVE_OPTION)
 			return -1;
+		String location = fileChooser.getSelectedFile().getAbsolutePath();
+
+		//System.out.println(location);
+		if(location.isEmpty())
+			return -1;
+		if(fileChooser.getSelectedFile() == null)
+			return -1;
+		
 		int romID = ROMManager.getID();
 		try
 		{
